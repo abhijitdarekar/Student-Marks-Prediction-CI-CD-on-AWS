@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 from src.components.data_transformation import DataTransformation,DataTransformationConfig
 
+from src.pipline.train_pipeline import ModelTrainer, ModelTrainerConfig
 
 @dataclass
 class DataIngestionConfig:
@@ -46,6 +47,8 @@ class DataIngestion:
             train_set.to_csv(self.ingestion_config.train_data_path,index=False,header=True)
             test_set.to_csv(self.ingestion_config.test_data_path,header=True,index=False)
 
+            logging.info(f"Train Set Shape{train_set.shape},Test set Shape {test_set.shape}")
+
             return (
                 self.ingestion_config.train_data_path,
                 self.ingestion_config.test_data_path
@@ -60,4 +63,7 @@ if __name__=="__main__":
     train_data, test_data = obj._initate_data_ingestion()
 
     data_transformation = DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
+    train_array,test_array,_ = data_transformation.initiate_data_transformation(train_data,test_data)
+    logging.info(f"Data Ingestion File | Train Array Size {train_array.shape},Test Array Shape {test_array.shape}")
+    model_Trainer = ModelTrainer()
+    print("Best R2 Value is :",model_Trainer.initate_model_trainer(train_array,test_array,None))

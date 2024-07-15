@@ -48,13 +48,54 @@ class ModelTrainer():
                 "CatBoost Regressor":CatBoostRegressor(verbose=0),
                 "Gradient Boost Regressor":GradientBoostingRegressor(verbose=0),
             }
+            params = {
+                "Lasso":{
+                    'alpha':[0.1,0.9,1,1.5,2]
+                },
+                "Ridge":{
+                    'alpha':[0.1,0.9,1,1.5,2]
+                },
+                "SVM Regression":{
+                    "kernel":['poly'],
+                },
+                "Decision Tree Regressor":{
+                    "criterion": ['squared_error',  'absolute_error'],
+                    'max_features':['sqrt','log2'],
+                },
+                "Random Forest Regressor":{
+                    "n_estimators":[10,50,100,150,200],
 
-            model_report : dict = evaluvate_model( X_train, y_train,X_Test, y_test, models)
-            logging.info(f"Model Report  {model_report}")
-            # best_model_name = max(model_report)
+                },
+                "AdaBoost Regressor":{
+                    "n_estimators":[10,50,100,150,200],
+                    "learning_rate":[0.001,0.01,0.1,0.5]
+                },
+                "XGBoost Regressor":{
+                    "n_estimators":[10,50,100,150,200],
+                    "learning_rate":[0.001,0.01,0.1,0.5]
+                },
+                "CatBoost Regressor":{
+                    'depth': [6,8,10],
+                    'learning_rate': [0.01, 0.05, 0.1],
+                    'iterations': [30, 50, 100]
+                },
+                "Gradient Boost Regressor":{
+                    "learning_rate":[0.001,0.05,0.1,1,2],
+                    "n_estimators":[10,50,100,150,200],
+                    'subsample':[0.6,0.7,0.75,0.8,0.85,0.9]
+                },
+                "Linear Regression":{},
+                "KNN Regression":{
+                    "n_neighbors":[5,7,10]
+                }
+
+            }
+            model_report : dict = evaluvate_model( X_train, y_train,X_Test, y_test, models,params)
+           
             best_model_score = max(model_report.values())
             best_model_name = [key for key,v in model_report.items() if v ==best_model_score][0]
             best_Model = models[best_model_name]
+
             logging.info(f"Best Model {best_model_name}, has Score {best_model_score}")
             if best_model_score<0.6:
                 raise CustomException("Model Performance : NO Best Model Found",sys)
@@ -65,7 +106,6 @@ class ModelTrainer():
                 object = best_Model
             )
 
-            # Predicting 
             predicted = best_Model.predict(X_Test)
             r2_value = r2_score(y_test,predicted)
             return r2_value

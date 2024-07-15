@@ -9,6 +9,7 @@ from src.exception import CustomException
 from src.logger import logging
 
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 
 
 
@@ -27,7 +28,7 @@ def save_object(file_path, object):
         raise CustomException(e,sys)
     
 
-def evaluvate_model( X_train, y_train,X_Test, y_test, models):
+def evaluvate_model( X_train, y_train,X_Test, y_test, models,params):
     """
     Function to Train the model and return the report.
     """
@@ -35,12 +36,20 @@ def evaluvate_model( X_train, y_train,X_Test, y_test, models):
     try:
 
         report = {}
-
+             
         for model in models.items():
             
             logging.info(f"MODEL TRAINING | Training Model {model[0]}")
+            param = params[model[0]]
+            grid_search_cv = GridSearchCV(model[1],param_grid=param,verbose=1,cv=3,)
+            # modell = model[1]
+            
+            grid_search_cv.fit(X_train, y_train)
             modell = model[1]
-            modell.fit(X_train, y_train)
+            logging.info(f"Grid Search CV Model {model[0]}, Best Params {grid_search_cv.best_params_}")
+            modell.set_params(**grid_search_cv.best_params_)
+            modell.fit(X_train,y_train)
+
             y_pred_train = modell.predict(X_train)
             y_pred_test = modell.predict(X_Test)
             train_model_score = r2_score(y_train,y_pred_train)
@@ -48,7 +57,7 @@ def evaluvate_model( X_train, y_train,X_Test, y_test, models):
             test_model_score = r2_score(y_test, y_pred_test)
             logging.info(f"{model[0]} | Training R2 : {train_model_score} | Testing R2 : {test_model_score}")
             report[model[0]]=test_model_score
-
+            
 
         return report
 

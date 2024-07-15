@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-import dill
+import pickle
 
 
 from src.exception import CustomException
@@ -21,7 +21,7 @@ def save_object(file_path, object):
         dir_path = os.path.dirname(file_path,)
         os.makedirs(dir_path,exist_ok=True)
         with open(file_path,"wb") as file:
-            dill.dump(object,file)
+            pickle.dump(object,file)
     
     except Exception as e:
         logging.error(f"Custom Exception ; {e}")
@@ -62,5 +62,16 @@ def evaluvate_model( X_train, y_train,X_Test, y_test, models,params):
         return report
 
     except Exception as e:
-        logging.error(f"Custom Exception ; {e}")
+        logging.error(f"Custom Exception : {e}")
+        raise CustomException(e,sys)
+    
+
+def load_object(object_path):
+    try :
+        with open(object_path,"rb") as file:
+            obj = pickle.load(file)
+
+            return obj
+    except Exception as e:
+        logging.error(f"Custom Exception : {e}")
         raise CustomException(e,sys)

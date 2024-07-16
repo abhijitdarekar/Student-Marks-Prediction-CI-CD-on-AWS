@@ -11,13 +11,13 @@ from src.utils import load_object
 import json
 
 class StudentModelInput(BaseModel):
-    gender : str = Field(description="The price must be greater than zero")
-    race_ethnicity : str =Field(description="The price must be greater than zero")
-    parental_level_of_education :str= Field(description="The price must be greater than zero")
-    lunch : str= Field(description="The price must be greater than zero")
-    test_preparation_course : str = Field(description="The price must be greater than zero")
-    writing_score : int
-    reading_score : int
+    gender : str = Field(default="male",description="Gender of Student. 'male' or 'female'")
+    race_ethnicity : str =Field(default = "group C",description="Race of Student. 'group A' , 'group B', 'group C', 'group D'or 'group E' ")
+    parental_level_of_education :str= Field(default="master's degree",description="The price must be greater than zero")
+    lunch : str= Field(default="free/reduced",description="Type of Subscription of lunch, 'standard' or 'free/reduced'.")
+    test_preparation_course : str = Field(default="none",description="Options 'none' or 'completed'.")
+    writing_score : int = Field(default=66,gt=10,lt=100,description="Writing Score of Student")
+    reading_score : int = Field(default=67,gt=10,lt=100,description="Reading Score of Student")
 
 class PredictPipeline:
     def __init__(self):
@@ -50,4 +50,5 @@ class PredictPipeline:
             return prediction
         except Exception as e:
             logging.error(f"Exception : {e}")
-            raise CustomException(e,sys)
+            return CustomException
+            # raise CustomException(e,sys)

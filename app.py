@@ -1,6 +1,7 @@
 from src.pipline.predict_pipeline import StudentModelInput ,PredictPipeline
 
 from fastapi import FastAPI
+from fastapi.responses import  PlainTextResponse
 import os 
 import sys
 
@@ -23,7 +24,13 @@ def root():
 
 @app.post("/predict",)
 def predict(student_data:StudentModelInput):
-    logging.info(f"API SERVER | Incoming Student Data : {student_data}")
-    prediction = predictionPipeline.predict(student_data.model_dump_json())
-    logging.info(f"API Server | Prediction output : {prediction}")
-    return {'math_score':prediction[0]}
+    try:
+        logging.info(f"API SERVER | Incoming Student Data ")
+        prediction = predictionPipeline.predict(student_data.model_dump_json())
+        logging.info(f"API Server | Prediction output : {prediction}")
+        return {'math_score':prediction[0]}
+    except Exception as e:
+        logging.error(f"API SERVER | Exception Caught : {e}")
+        return PlainTextResponse("Bad Request",status_code=400)
+        
+        

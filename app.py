@@ -32,5 +32,4 @@ def predict(student_data:StudentModelInput):
     except Exception as e:
         logging.error(f"API SERVER | Exception Caught : {e}")
         return PlainTextResponse("Bad Request",status_code=400)
-        
-        
+    

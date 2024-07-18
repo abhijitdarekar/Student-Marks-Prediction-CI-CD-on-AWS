@@ -3,6 +3,7 @@ from src.pipline.predict_pipeline import StudentModelInput ,PredictPipeline
 from fastapi import FastAPI
 from fastapi.responses import  PlainTextResponse
 import os 
+
 import sys
 
 import numpy as np
